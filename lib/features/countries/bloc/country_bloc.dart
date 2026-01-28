@@ -1,4 +1,4 @@
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../domain/entities/country.dart';
 import '../domain/repositories/country_repository.dart';
