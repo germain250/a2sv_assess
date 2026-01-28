@@ -47,11 +47,11 @@ class CountryBloc extends Bloc<CountryEvent, CountryState> {
     await favorites.toggleFavorite(event.cca2);
     _favoriteIds = await favorites.getFavoritesIds();
 
-    // Re-emit to refresh UI
+    // emit again for UI update
     emit(CountryLoaded(_countries));
   }
 
-  /// UI helper
+  /// A method to check if a country is favorite for UI purposes
   bool isFavorite(String cca2) {
     return _favoriteIds.contains(cca2);
   }
