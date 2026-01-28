@@ -1,0 +1,44 @@
+.
+├── core
+│   ├── constants
+│   │   └── app_keys.dart
+│   ├── database
+│   ├── error
+│   │   └── failures.dart
+│   ├── network
+│   │   ├── api_client.dart
+│   │   └── network_info.dart
+│   └── theme
+│       ├── app_theme.dart
+│       └── theme_cubit.dart
+├── features
+│   └── countries
+│       ├── cubit
+│       │   ├── country_cubit.dart
+│       │   └── country_state.dart
+│       ├── data
+│       │   ├── datasources
+│       │   │   ├── country_local_datasource.dart
+│       │   │   └── country_remote_datasource.dart
+│       │   ├── models
+│       │   │   └── country_model.dart
+│       │   └── repositories
+│       │       └── country_repository_impl.dart
+│       ├── domain
+│       │   ├── entities
+│       │   │   └── country.dart
+│       │   └── repositories
+│       │       └── country_repository.dart
+│       └── presentation
+│           ├── screens
+│           │   ├── country_details_screen.dart
+│           │   ├── favorite_screen.dart
+│           │   └── home_screen.dart
+│           └── widgets
+│               ├── country_card.dart
+│               ├── search_bar.dart
+│               └── skeleton_loader.dart
+├── folder_structure
+└── main.dart
+
+20 directories, 22 files
