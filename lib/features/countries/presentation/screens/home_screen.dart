@@ -167,7 +167,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           physics: const AlwaysScrollableScrollPhysics(),
                           itemCount: favorites.length,
                           itemBuilder: (context, index) {
-                            return CountryCard(country: favorites[index]);
+                            return CountryCard(
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => CountryDetailScreen(
+                                    cca2: favorites[index].cca2,
+                                  ),
+                                ),
+                              ),
+                              country: favorites[index],
+                            );
                           },
                         ),
                       );
