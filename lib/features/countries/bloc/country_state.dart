@@ -18,6 +18,8 @@ class CountryDetailsLoaded extends CountryState {
   CountryDetailsLoaded(this.country);
 }
 
+class CountrySearch extends CountryState {}
+
 class CountryError extends CountryState {
   final String message;
 

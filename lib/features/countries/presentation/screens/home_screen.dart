@@ -3,6 +3,7 @@ import 'package:discover/features/countries/bloc/country_bloc.dart';
 import 'package:discover/features/countries/bloc/country_event.dart';
 import 'package:discover/features/countries/bloc/country_state.dart';
 import 'package:discover/features/countries/presentation/widgets/country_card.dart';
+import 'package:discover/features/countries/presentation/widgets/country_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -28,8 +29,8 @@ class HomeScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            SearchBar(
-              onChanged: (query) {
+            CountrySearchBar(
+              onSearchChanged: (query) {
                 context.read<CountryBloc>().add(SearchCountries(query));
               },
             ),
@@ -49,6 +50,7 @@ class HomeScreen extends StatelessWidget {
                       return Center(child: Text("No Countries Found"));
                     }
                     return ListView.builder(
+                      itemCount: state.countries.length,
                       itemBuilder: (context, index) {
                         final country = state.countries[index];
                         return CountryCard(country: country);

@@ -17,6 +17,7 @@ class CountryBloc extends Bloc<CountryEvent, CountryState> {
     on<FetchCountries>(_onFetchCountries);
     on<LoadFavorites>(_onLoadFavorites);
     on<ToggleFavorite>(_onToggleFavorite);
+    on<SearchCountries>(_onSearchCountries);
   }
 
   Future<void> _onLoadFavorites(
@@ -49,6 +50,24 @@ class CountryBloc extends Bloc<CountryEvent, CountryState> {
 
     // emit again for UI update
     emit(CountryLoaded(_countries));
+  }
+
+  Future<void> _onSearchCountries(
+    SearchCountries event,
+    Emitter<CountryState> emit,
+  ) async {
+    final query = event.query.toLowerCase();
+
+    if (query.isEmpty) {
+      emit(CountryLoaded(_countries));
+      return;
+    } else {
+      final filtered = _countries
+          .where((c) => c.name.toLowerCase().contains(query))
+          .toList();
+
+      emit(CountryLoaded(filtered));
+    }
   }
 
   /// A method to check if a country is favorite for UI purposes
