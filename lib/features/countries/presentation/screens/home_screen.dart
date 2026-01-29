@@ -6,6 +6,7 @@ import 'package:discover/features/countries/bloc/country_event.dart';
 import 'package:discover/features/countries/bloc/country_state.dart';
 import 'package:discover/features/countries/presentation/widgets/country_card.dart';
 import 'package:discover/features/countries/presentation/widgets/country_search_bar.dart';
+import 'package:discover/features/countries/presentation/widgets/skeleton_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -73,8 +74,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: BlocBuilder<CountryBloc, CountryState>(
                           builder: (context, state) {
                             if (state is CountryLoading) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
+                              return ListView.builder(
+                                itemCount: 8,
+                                itemBuilder: (_, __) => const CountrySkeleton(),
                               );
                             }
 
@@ -90,18 +92,26 @@ class _HomeScreenState extends State<HomeScreen> {
 
                             if (state is CountryLoaded) {
                               if (state.countries.isEmpty) {
-                                return const Center(
-                                  child: Text('No countries found'),
+                                return EmptyState(
+                                  cs: Theme.of(context).colorScheme,
+                                  title: "No countries found",
+                                  description: "Try a different search",
+                                  icon: Icons.search_off,
                                 );
                               }
 
-                              return ListView.builder(
-                                itemCount: state.countries.length,
-                                itemBuilder: (context, index) {
-                                  return CountryCard(
-                                    country: state.countries[index],
-                                  );
+                              return RefreshIndicator(
+                                onRefresh: () async {
+                                  bloc.add(FetchCountries());
                                 },
+                                child: ListView.builder(
+                                  itemCount: state.countries.length,
+                                  itemBuilder: (context, index) {
+                                    return CountryCard(
+                                      country: state.countries[index],
+                                    );
+                                  },
+                                ),
                               );
                             }
 
@@ -113,6 +123,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   BlocBuilder<CountryBloc, CountryState>(
                     builder: (context, state) {
+                      if (state is CountryLoading) {
+                        return ListView.builder(
+                          itemCount: 6,
+                          itemBuilder: (_, __) => const CountrySkeleton(),
+                        );
+                      }
+
                       if (state is CountryLoaded) {
                         final favorites = state.countries
                             .where((c) => bloc.isFavorite(c.cca2))
@@ -129,21 +146,27 @@ class _HomeScreenState extends State<HomeScreen> {
                               TextButton(
                                 onPressed: () =>
                                     setState(() => selectedIndex = 0),
-                                child: Text("View Countries"),
+                                child: const Text("View Countries"),
                               ),
                             ],
                           );
                         }
 
-                        return ListView.builder(
-                          itemCount: favorites.length,
-                          itemBuilder: (context, index) {
-                            return CountryCard(country: favorites[index]);
+                        return RefreshIndicator(
+                          onRefresh: () async {
+                            bloc.add(FetchCountries());
                           },
+                          child: ListView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            itemCount: favorites.length,
+                            itemBuilder: (context, index) {
+                              return CountryCard(country: favorites[index]);
+                            },
+                          ),
                         );
                       }
 
-                      return const Center(child: CircularProgressIndicator());
+                      return const SizedBox.shrink();
                     },
                   ),
                 ],
