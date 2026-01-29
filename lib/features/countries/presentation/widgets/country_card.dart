@@ -17,8 +17,11 @@ class CountryCard extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
+      hoverColor: Theme.of(context).cardColor,
+      
       child: Card(
         elevation: 0,
+        color: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Padding(
