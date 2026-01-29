@@ -4,6 +4,7 @@ import 'package:discover/core/widgets/empty_state.dart';
 import 'package:discover/features/countries/bloc/country_bloc.dart';
 import 'package:discover/features/countries/bloc/country_event.dart';
 import 'package:discover/features/countries/bloc/country_state.dart';
+import 'package:discover/features/countries/presentation/screens/country_details_screen.dart';
 import 'package:discover/features/countries/presentation/widgets/country_card.dart';
 import 'package:discover/features/countries/presentation/widgets/country_search_bar.dart';
 import 'package:discover/features/countries/presentation/widgets/skeleton_loader.dart';
@@ -108,6 +109,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                   itemCount: state.countries.length,
                                   itemBuilder: (context, index) {
                                     return CountryCard(
+                                      onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) {
+                                            return CountryDetailScreen(
+                                              cca2: state.countries[index].cca2,
+                                            );
+                                          },
+                                        ),
+                                      ),
                                       country: state.countries[index],
                                     );
                                   },

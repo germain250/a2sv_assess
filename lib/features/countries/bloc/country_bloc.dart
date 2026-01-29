@@ -18,6 +18,7 @@ class CountryBloc extends Bloc<CountryEvent, CountryState> {
     on<LoadFavorites>(_onLoadFavorites);
     on<ToggleFavorite>(_onToggleFavorite);
     on<SearchCountries>(_onSearchCountries);
+    on<FetchCountryDetails>(_onFetchCountryDetails);
   }
 
   Future<void> _onLoadFavorites(
@@ -67,6 +68,20 @@ class CountryBloc extends Bloc<CountryEvent, CountryState> {
           .toList();
 
       emit(CountryLoaded(filtered));
+    }
+  }
+
+  Future<void> _onFetchCountryDetails(
+    FetchCountryDetails event,
+    Emitter<CountryState> emit,
+  ) async {
+    emit(CountryLoading());
+
+    try {
+      final country = await repository.getCountryDetails(event.cca2);
+      emit(CountryDetailsLoaded(country));
+    } catch (e) {
+      emit(CountryError(e.toString()));
     }
   }
 
