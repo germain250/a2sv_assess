@@ -13,7 +13,7 @@ class CountryBloc extends Bloc<CountryEvent, CountryState> {
   List<Country> _countries = [];
   Set<String> _favoriteIds = {};
 
-  CountryBloc(this.repository, this.favorites) : super(CountryInitial()) {
+  CountryBloc(this.repository, this.favorites) : super(const CountryState()) {
     on<FetchCountries>(_onFetchCountries);
     on<LoadFavorites>(_onLoadFavorites);
     on<ToggleFavorite>(_onToggleFavorite);
@@ -26,19 +26,22 @@ class CountryBloc extends Bloc<CountryEvent, CountryState> {
     Emitter<CountryState> emit,
   ) async {
     _favoriteIds = await favorites.getFavoritesIds();
+    emit(state.copyWith());
   }
 
   Future<void> _onFetchCountries(
     FetchCountries event,
     Emitter<CountryState> emit,
   ) async {
-    emit(CountryLoading());
+    emit(state.copyWith(isLoadingCountries: true, errorMessage: null));
 
     try {
       _countries = await repository.getAllCountries();
-      emit(CountryLoaded(_countries));
+      emit(state.copyWith(countries: _countries, isLoadingCountries: false));
     } catch (e) {
-      emit(CountryError(e.toString()));
+      emit(
+        state.copyWith(isLoadingCountries: false, errorMessage: e.toString()),
+      );
     }
   }
 
@@ -48,9 +51,7 @@ class CountryBloc extends Bloc<CountryEvent, CountryState> {
   ) async {
     await favorites.toggleFavorite(event.cca2);
     _favoriteIds = await favorites.getFavoritesIds();
-
-    // emit again for UI update
-    emit(CountryLoaded(_countries));
+    emit(state.copyWith(errorMessage: null));
   }
 
   Future<void> _onSearchCountries(
@@ -60,32 +61,31 @@ class CountryBloc extends Bloc<CountryEvent, CountryState> {
     final query = event.query.toLowerCase();
 
     if (query.isEmpty) {
-      emit(CountryLoaded(_countries));
+      emit(state.copyWith(countries: _countries, errorMessage: null));
       return;
-    } else {
-      final filtered = _countries
-          .where((c) => c.name.toLowerCase().contains(query))
-          .toList();
-
-      emit(CountryLoaded(filtered));
     }
+
+    final filtered = _countries
+        .where((c) => c.name.toLowerCase().contains(query))
+        .toList();
+
+    emit(state.copyWith(countries: filtered, errorMessage: null));
   }
 
   Future<void> _onFetchCountryDetails(
     FetchCountryDetails event,
     Emitter<CountryState> emit,
   ) async {
-    emit(CountryLoading());
+    emit(state.copyWith(isLoadingDetail: true, errorMessage: null));
 
     try {
       final country = await repository.getCountryDetails(event.cca2);
-      emit(CountryDetailsLoaded(country));
+      emit(state.copyWith(selectedCountry: country, isLoadingDetail: false));
     } catch (e) {
-      emit(CountryError(e.toString()));
+      emit(state.copyWith(isLoadingDetail: false, errorMessage: e.toString()));
     }
   }
 
-  /// A method to check if a country is favorite for UI purposes
   bool isFavorite(String cca2) {
     return _favoriteIds.contains(cca2);
   }

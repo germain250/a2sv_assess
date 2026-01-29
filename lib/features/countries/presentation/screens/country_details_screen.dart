@@ -36,119 +36,123 @@ class _CountryDetailScreenState extends State<CountryDetailScreen> {
       body: SafeArea(
         child: BlocBuilder<CountryBloc, CountryState>(
           builder: (context, state) {
-            /// Loading skeleton
-            if (state is CountryLoading) {
+            // Loading
+            if (state.isLoadingDetail) {
               return const CountryDetailSkeleton();
             }
 
-            /// Error state
-            if (state is CountryError) {
+            // Error
+            if (state.errorMessage != null) {
               return Center(
-                child: Text(
-                  state.message,
-                  style: Theme.of(context).textTheme.bodyLarge,
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Text(
+                    state.errorMessage!,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
                 ),
               );
             }
 
-            /// successful load of details
-            if (state is CountryDetailsLoaded) {
-              final country = state.country;
+            // No data loaded yet
+            final country = state.selectedCountry;
+            if (country == null) {
+              return const Center(child: Text('No country data available'));
+            }
 
-              return Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
-                    child: Row(
+            // Success → show content
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+                  child: Row(
+                    children: [
+                      const BackButton(),
+
+                      Expanded(
+                        child: Text(
+                          country.name,
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                      ),
+
+                      const SizedBox(width: 48),
+                    ],
+                  ),
+                ),
+
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: () async => _fetch(),
+                    child: ListView(
+                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+                      physics: const AlwaysScrollableScrollPhysics(),
                       children: [
-                        const BackButton(),
-
-                        Expanded(
-                          child: Text(
-                            country.name,
-                            textAlign: TextAlign.center,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.titleLarge,
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: AspectRatio(
+                            aspectRatio: 16 / 9,
+                            child: Image.network(
+                              country.flag,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.broken_image, size: 80),
+                            ),
                           ),
                         ),
 
-                        const SizedBox(width: 48),
+                        const SizedBox(height: 28),
+
+                        Text(
+                          "Key Statistics",
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 20),
+
+                        StatRow(label: "Area", value: "${country.area} sq km"),
+                        StatRow(
+                          label: "Population",
+                          value:
+                              "${(country.population / 1000000).toStringAsFixed(1)} million",
+                        ),
+                        StatRow(
+                          label: "Region",
+                          value: country.region ?? "N/A",
+                        ),
+                        StatRow(
+                          label: "Sub Region",
+                          value: country.subregion ?? "N/A",
+                        ),
+
+                        const SizedBox(height: 40),
+
+                        Text(
+                          "Timezones",
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 16),
+
+                        Wrap(
+                          spacing: 12,
+                          runSpacing: 12,
+                          children: (country.timezones ?? [])
+                              .map(
+                                (tz) => TimezoneChip(label: tz, isDark: isDark),
+                              )
+                              .toList(),
+                        ),
                       ],
                     ),
                   ),
-
-                  /// ........The contents
-                  Expanded(
-                    child: RefreshIndicator(
-                      onRefresh: () async => _fetch(),
-                      child: ListView(
-                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: AspectRatio(
-                              aspectRatio: 16 / 9,
-                              child: Image.network(
-                                country.flag,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 28),
-
-                          Text(
-                            "Key Statistics",
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                          const SizedBox(height: 20),
-
-                          StatRow(
-                            label: "Area",
-                            value: "${country.area} sq km",
-                          ),
-                          StatRow(
-                            label: "Population",
-                            value: "${country.population} million",
-                          ),
-                          StatRow(
-                            label: "Region",
-                            value: country.region ?? "N/A",
-                          ),
-                          StatRow(
-                            label: "Sub Region",
-                            value: country.subregion ?? "N/A",
-                          ),
-
-                          const SizedBox(height: 40),
-
-                          Text(
-                            "Timezones",
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                          const SizedBox(height: 16),
-
-                          Wrap(
-                            spacing: 12,
-                            runSpacing: 12,
-                            children: (country.timezones ?? [])
-                                .map(
-                                  (tz) =>
-                                      TimezoneChip(label: tz, isDark: isDark),
-                                )
-                                .toList(),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            }
-
-            return const SizedBox.shrink();
+                ),
+              ],
+            );
           },
         ),
       ),

@@ -1,27 +1,45 @@
+import 'package:equatable/equatable.dart';
 import 'package:discover/features/countries/domain/entities/country.dart';
 
-abstract class CountryState {}
-
-class CountryInitial extends CountryState {}
-
-class CountryLoading extends CountryState {}
-
-class CountryLoaded extends CountryState {
+class CountryState extends Equatable {
   final List<Country> countries;
+  final bool isLoadingCountries;
+  final Country? selectedCountry;
+  final bool isLoadingDetail;
+  final String? errorMessage;
 
-  CountryLoaded(this.countries);
-}
+  const CountryState({
+    this.countries = const [],
+    this.isLoadingCountries = false,
+    this.selectedCountry,
+    this.isLoadingDetail = false,
+    this.errorMessage,
+  });
 
-class CountryDetailsLoaded extends CountryState {
-  final Country country;
+  CountryState copyWith({
+    List<Country>? countries,
+    bool? isLoadingCountries,
+    Country? selectedCountry,
+    bool? isLoadingDetail,
+    String? errorMessage,
+  }) {
+    return CountryState(
+      countries: countries ?? this.countries,
+      isLoadingCountries: isLoadingCountries ?? this.isLoadingCountries,
+      selectedCountry: selectedCountry ?? this.selectedCountry,
+      isLoadingDetail: isLoadingDetail ?? this.isLoadingDetail,
+      errorMessage: errorMessage ?? this.errorMessage,
+    );
+  }
 
-  CountryDetailsLoaded(this.country);
-}
+  bool get hasError => errorMessage != null && errorMessage!.isNotEmpty;
 
-class CountrySearch extends CountryState {}
-
-class CountryError extends CountryState {
-  final String message;
-
-  CountryError(this.message);
+  @override
+  List<Object?> get props => [
+    countries,
+    isLoadingCountries,
+    selectedCountry,
+    isLoadingDetail,
+    errorMessage,
+  ];
 }

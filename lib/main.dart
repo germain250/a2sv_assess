@@ -16,7 +16,6 @@ void main() {
 }
 
 class CountriesApp extends StatelessWidget {
-  
   const CountriesApp({super.key});
 
   @override
@@ -31,7 +30,8 @@ class CountriesApp extends StatelessWidget {
         BlocProvider(
           create: (_) => CountryBloc(repository, favorites)
             ..add(LoadFavorites())
-            ..add(FetchCountries()),
+            ..add(FetchCountries())
+            ..add(ToggleFavorite('')),
         ),
       ],
       child: BlocBuilder<ThemeCubit, bool>(

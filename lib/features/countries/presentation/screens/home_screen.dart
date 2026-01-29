@@ -52,9 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   Switch(
                     value: isDark,
-                    onChanged: (_) {
-                      context.read<ThemeCubit>().toggleTheme();
-                    },
+                    onChanged: (_) => context.read<ThemeCubit>().toggleTheme(),
                   ),
                 ],
               ),
@@ -64,6 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: IndexedStack(
                 index: selectedIndex,
                 children: [
+                  // Tab 1: All Countries + Search
                   Column(
                     children: [
                       CountrySearchBar(
@@ -74,14 +73,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       Expanded(
                         child: BlocBuilder<CountryBloc, CountryState>(
                           builder: (context, state) {
-                            if (state is CountryLoading) {
+                            if (state.isLoadingCountries) {
                               return ListView.builder(
                                 itemCount: 8,
                                 itemBuilder: (_, __) => const CountrySkeleton(),
                               );
                             }
 
-                            if (state is CountryError) {
+                            if (state.errorMessage != null) {
                               return EmptyState(
                                 cs: Theme.of(context).colorScheme,
                                 title: "Hmmmmm Try again",
@@ -91,93 +90,87 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                             }
 
-                            if (state is CountryLoaded) {
-                              if (state.countries.isEmpty) {
-                                return EmptyState(
-                                  cs: Theme.of(context).colorScheme,
-                                  title: "No countries found",
-                                  description: "Try a different search",
-                                  icon: Icons.search_off,
-                                );
-                              }
+                            final countries = state.countries;
 
-                              return RefreshIndicator(
-                                onRefresh: () async {
-                                  bloc.add(FetchCountries());
-                                },
-                                child: ListView.builder(
-                                  itemCount: state.countries.length,
-                                  itemBuilder: (context, index) {
-                                    return CountryCard(
-                                      onTap: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) {
-                                            return CountryDetailScreen(
-                                              cca2: state.countries[index].cca2,
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                      country: state.countries[index],
-                                    );
-                                  },
-                                ),
+                            if (countries.isEmpty) {
+                              return EmptyState(
+                                cs: Theme.of(context).colorScheme,
+                                title: "No countries found",
+                                description: "Try a different search",
+                                icon: Icons.search_off,
                               );
                             }
 
-                            return const SizedBox.shrink();
+                            return RefreshIndicator(
+                              onRefresh: () async {
+                                bloc.add(FetchCountries());
+                              },
+                              child: ListView.builder(
+                                itemCount: countries.length,
+                                itemBuilder: (context, index) {
+                                  final country = countries[index];
+                                  return CountryCard(
+                                    onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => CountryDetailScreen(
+                                          cca2: country.cca2,
+                                        ),
+                                      ),
+                                    ),
+                                    country: country,
+                                  );
+                                },
+                              ),
+                            );
                           },
                         ),
                       ),
                     ],
                   ),
+
+                  // Tab 2: Favorites
                   BlocBuilder<CountryBloc, CountryState>(
                     builder: (context, state) {
-                      if (state is CountryLoading) {
+                      if (state.isLoadingCountries) {
                         return ListView.builder(
                           itemCount: 6,
                           itemBuilder: (_, __) => const CountrySkeleton(),
                         );
                       }
 
-                      if (state is CountryLoaded) {
-                        final favorites = state.countries
-                            .where((c) => bloc.isFavorite(c.cca2))
-                            .toList();
+                      final favorites = state.countries
+                          .where((c) => bloc.isFavorite(c.cca2))
+                          .toList();
 
-                        if (favorites.isEmpty) {
-                          return EmptyState(
-                            cs: Theme.of(context).colorScheme,
-                            title: "No Favorites yet",
-                            description:
-                                "Browse countries and add to Favorite!",
-                            icon: Icons.hourglass_empty_outlined,
-                            actions: [
-                              TextButton(
-                                onPressed: () =>
-                                    setState(() => selectedIndex = 0),
-                                child: const Text("View Countries"),
-                              ),
-                            ],
-                          );
-                        }
-
-                        return RefreshIndicator(
-                          onRefresh: () async {
-                            bloc.add(FetchCountries());
-                          },
-                          child: ListView.builder(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            itemCount: favorites.length,
-                            itemBuilder: (context, index) {
-                              return CountryCard(country: favorites[index]);
-                            },
-                          ),
+                      if (favorites.isEmpty) {
+                        return EmptyState(
+                          cs: Theme.of(context).colorScheme,
+                          title: "No Favorites yet",
+                          description: "Browse countries and add to Favorite!",
+                          icon: Icons.hourglass_empty_outlined,
+                          actions: [
+                            TextButton(
+                              onPressed: () =>
+                                  setState(() => selectedIndex = 0),
+                              child: const Text("View Countries"),
+                            ),
+                          ],
                         );
                       }
 
-                      return const SizedBox.shrink();
+                      return RefreshIndicator(
+                        onRefresh: () async {
+                          bloc.add(FetchCountries());
+                        },
+                        child: ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          itemCount: favorites.length,
+                          itemBuilder: (context, index) {
+                            return CountryCard(country: favorites[index]);
+                          },
+                        ),
+                      );
                     },
                   ),
                 ],
@@ -187,7 +180,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
 
-      //The bottom appbar
       bottomNavigationBar: ClipRRect(
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(12),
@@ -207,9 +199,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   iconPath: items[index]["icon"]!,
                   label: items[index]["label"]!,
                   isActive: selectedIndex == index,
-                  onTap: () => setState(() {
-                    selectedIndex = index;
-                  }),
+                  onTap: () => setState(() => selectedIndex = index),
                 );
               }),
             ),
