@@ -87,6 +87,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                 description:
                                     "Please try again after checking network connectivity",
                                 icon: Icons.network_check,
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      bloc.add(FetchCountries());
+                                    },
+                                    child: Text("Retry"),
+                                  ),
+                                ],
                               );
                             }
 

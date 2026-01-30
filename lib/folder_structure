@@ -8,18 +8,23 @@
 │   ├── network
 │   │   ├── api_client.dart
 │   │   └── network_info.dart
-│   └── theme
-│       ├── app_theme.dart
-│       └── theme_cubit.dart
+│   ├── theme
+│   │   ├── app_theme.dart
+│   │   └── theme_cubit.dart
+│   └── widgets
+│       ├── bottom_bar_item.dart
+│       └── empty_state.dart
 ├── features
 │   └── countries
-│       ├── cubit
-│       │   ├── country_cubit.dart
+│       ├── bloc
+│       │   ├── country_bloc.dart
+│       │   ├── country_event.dart
 │       │   └── country_state.dart
 │       ├── data
 │       │   ├── datasources
 │       │   │   ├── country_local_datasource.dart
-│       │   │   └── country_remote_datasource.dart
+│       │   │   ├── country_remote_datasource.dart
+│       │   │   └── favorite_local_datasource.dart
 │       │   ├── models
 │       │   │   └── country_model.dart
 │       │   └── repositories
@@ -36,9 +41,12 @@
 │           │   └── home_screen.dart
 │           └── widgets
 │               ├── country_card.dart
-│               ├── search_bar.dart
-│               └── skeleton_loader.dart
+│               ├── country_details_skeleton.dart
+│               ├── country_search_bar.dart
+│               ├── skeleton_loader.dart
+│               ├── stat_row.dart
+│               └── timezone_chip.dart
 ├── folder_structure
 └── main.dart
 
-20 directories, 22 files
+21 directories, 29 files
