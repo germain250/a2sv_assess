@@ -107,6 +107,11 @@ A Flutter application for browsing countries and viewing detailed information, b
 
 21 directories, 29 files
 
+## Future Improvements
+
+-Use hive for offline first app
+-Localization to enhence accessibility
+
 
 ### Steps
 ```bash
@@ -114,3 +119,4 @@ git clone https://github.com/germain250/a2sv_assess.git
 cd a2sv_assess
 flutter pub get
 flutter run
+flutter build apk --release
