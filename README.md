@@ -53,64 +53,28 @@ A Flutter application for browsing countries and viewing detailed information, b
 -Easier testing and refactoring
 -Independence of UI from data sources
 
-
-.
-├── core
-│   ├── constants
-│   │   └── app_keys.dart
-│   ├── database
-│   ├── error
-│   │   └── failures.dart
-│   ├── network
-│   │   ├── api_client.dart
-│   │   └── network_info.dart
-│   ├── theme
-│   │   ├── app_theme.dart
-│   │   └── theme_cubit.dart
-│   └── widgets
-│       ├── bottom_bar_item.dart
-│       └── empty_state.dart
-├── features
-│   └── countries
-│       ├── bloc
-│       │   ├── country_bloc.dart
-│       │   ├── country_event.dart
-│       │   └── country_state.dart
-│       ├── data
-│       │   ├── datasources
-│       │   │   ├── country_local_datasource.dart
-│       │   │   ├── country_remote_datasource.dart
-│       │   │   └── favorite_local_datasource.dart
-│       │   ├── models
-│       │   │   └── country_model.dart
-│       │   └── repositories
-│       │       └── country_repository_impl.dart
-│       ├── domain
-│       │   ├── entities
-│       │   │   └── country.dart
-│       │   └── repositories
-│       │       └── country_repository.dart
-│       └── presentation
-│           ├── screens
-│           │   ├── country_details_screen.dart
-│           │   ├── favorite_screen.dart
-│           │   └── home_screen.dart
-│           └── widgets
-│               ├── country_card.dart
-│               ├── country_details_skeleton.dart
-│               ├── country_search_bar.dart
-│               ├── skeleton_loader.dart
-│               ├── stat_row.dart
-│               └── timezone_chip.dart
-├── folder_structure
-└── main.dart
-
-21 directories, 29 files
+lib/
+├── core/                        # Shared infrastructure
+│   ├── constants/               # App-wide keys and strings
+│   ├── database/                # Local database setup
+│   ├── error/                   # Failures and Exception handling
+│   ├── network/                 # API client and Network info
+│   ├── theme/                   # App theme and Theme Cubit
+│   └── widgets/                 # Reusable global UI components
+│
+├── features/                    # Feature-driven modules
+│   └── countries/               # Countries feature module
+│       ├── bloc/                # BLoC logic (Events & States)
+│       ├── data/                # Repository impl & Data sources
+│       ├── domain/              # Entities & Repository interfaces
+│       └── presentation/        # UI Screens and Widgets
+│
+└── main.dart                    # Application entry point
 
 ## Future Improvements
 
--Use hive for offline first app
--Localization to enhence accessibility
+- Use hive for offline first app
+- Localization to enhence accessibility
 
 
 ### Steps
