@@ -75,6 +75,7 @@ lib/
 
 - Use hive for offline first app
 - Localization to enhence accessibility
+- Animations and gestures
 
 
 ### Steps
